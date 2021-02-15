@@ -10,5 +10,5 @@ while (True):
   time.sleep(0.5)
   read = smbus2.i2c_msg.read(ADDR, 4)
   bus.i2c_rdwr(read)
-  pressure = int.from_bytes(read.buf[1]+read.buf[2]+read.buf[3], 'big')
+  pressure = int.from_bytes(read.buf[1]+read.buf[2]+read.buf[3], 'big') *25 / 16777215
   print(pressure)
