@@ -72,9 +72,9 @@ class GyroscopeSensor():
             (int, int, int): returns (x, y, z) taken from the gyroscope sensor as a signed number in degrees.
         """
         self.bus.i2c_rdwr( self._gyro_request, self._gyro_reader )
-        x = int.from_bytes(self._gyro_reader[0]+self._gyro_reader[1], 'big', signed=True) * self._scaling_factor
-        y = int.from_bytes(self._gyro_reader[2]+self._gyro_reader[3], 'big', signed=True) * self._scaling_factor
-        z = int.from_bytes(self._gyro_reader[4]+self._gyro_reader[5], 'big', signed=True) * self._scaling_factor
+        x = int.from_bytes(self._gyro_reader.buf[0]+self._gyro_reader.buf[1], 'big', signed=True) * self._scaling_factor
+        y = int.from_bytes(self._gyro_reader.buf[2]+self._gyro_reader.buf[3], 'big', signed=True) * self._scaling_factor
+        z = int.from_bytes(self._gyro_reader.buf[4]+self._gyro_reader.buf[5], 'big', signed=True) * self._scaling_factor
         return (x, y, z) 
     
     @property
