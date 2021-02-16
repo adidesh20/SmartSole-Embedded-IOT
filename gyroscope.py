@@ -32,7 +32,7 @@ class GyroscopeSensor():
             "OUT_Y_LSB"   : 0x04,
             "OUT_Z_MSB"   : 0x05,
             "OUT_Z_LSB"   : 0x06,
-            "WHO_AM_I"    : 0x0D,
+            "WHO_AM_I"    : 0x0C,
             "CTRL_REG_0"  : 0x0D,
             "CTRL_REG_1"  : 0x13,
             "CTRL_REG_2"  : 0x14,
