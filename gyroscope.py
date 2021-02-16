@@ -26,17 +26,17 @@ class GyroscopeSensor():
         self._SENSITIVITY_SETTINGS = { 250: 0x03, 500: 0x02, 1000: 0x01, 2000: 0x00, }
 
         self._REG = {
-            OUT_X_MSB   : 0x01,
-            OUT_X_LSB   : 0x02,
-            OUT_Y_MSB   : 0x03,
-            OUT_Y_LSB   : 0x04,
-            OUT_Z_MSB   : 0x05,
-            OUT_Z_LSB   : 0x06,
-            WHO_AM_I    : 0x0D,
-            CTRL_REG_0  : 0x0D,
-            CTRL_REG_1  : 0x13,
-            CTRL_REG_2  : 0x14,
-            CTRL_REG_3  : 0x15,
+            "OUT_X_MSB"   : 0x01,
+            "OUT_X_LSB"   : 0x02,
+            "OUT_Y_MSB"   : 0x03,
+            "OUT_Y_LSB"   : 0x04,
+            "OUT_Z_MSB"   : 0x05,
+            "OUT_Z_LSB"   : 0x06,
+            "WHO_AM_I"    : 0x0D,
+            "CTRL_REG_0"  : 0x0D,
+            "CTRL_REG_1"  : 0x13,
+            "CTRL_REG_2"  : 0x14,
+            "CTRL_REG_3"  : 0x15,
         }
         
         # create some simple lambdas to shorthand reading and writing messages
