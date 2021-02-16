@@ -48,7 +48,8 @@ class GyroscopeSensor():
         self.bus.i2c_rdwr( write( [ self._REG['WHO_AM_I'] ] ), device_id_reader )
 
         # try most basic communication, this is a read-only register set to the device id
-        if device_id_reader.buf[0] != 0xD7:
+        print('device id: {}'.format(int.from_bytes(device_id_reader.buf[0], 'big')))
+        if int.from_bytes(device_id_reader.buf[0], 'big') != 0xD7:
             raise RuntimeError("FXAS21002C gyroscope sensor not found, check your wiring")
 
         sens_setting = self._SENSITIVITY_SETTINGS[ self.sensitivity ]
