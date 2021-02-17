@@ -21,7 +21,7 @@ class PressureSensor():
         self.bus = bus
         self.ADDR = address
 
-        self._REG_DATA = 0xAA,
+        self._REG_DATA = 0xAA
         
         # create some simple lambdas to shorthand reading and writing messages
         read = lambda x: smbus2.i2c_msg.read(self.ADDR, x)
@@ -31,8 +31,6 @@ class PressureSensor():
         self._psi_request = write( [ self._REG_DATA, 0x00, 0x00 ] )
         self._status_reader = read( 1 )
         self._psi_reader = read( 4 )
-        # allow time to activate (>60ms as per datasheet)
-        time.sleep(0.1)
     
     def read(self):
         """Gets a reading from the gyroscope sensor for x, y, z
@@ -41,6 +39,7 @@ class PressureSensor():
             (int, int, int): returns (x, y, z) taken from the gyroscope sensor as a signed number in degrees.
         """
         self.bus.i2c_rdwr( self._psi_request )
+        time.sleep(0.1)
 
         done = False
         # set up timeout
@@ -48,13 +47,14 @@ class PressureSensor():
         while not done:
             self.bus.i2c_rdwr( self._status_reader )
             # if status byte = completed or timeout
-            if not self._status_reader.buf[0] & 0x20:
+            if int.from_bytes(self._status_reader.buf[0],'big') == 0x20:
                 done = True
             if (time.time() - start) > 1.0:
                 raise TimeoutException("Reading taking too long to complete")
 
         # get actual reading and convert to psi
         self.bus.i2c_rdwr( self._psi_reader )
-        reading = int.from_bytes( self._psi_reader.buf[1] + self._psi_reader.buf[2] + self._psi_reader.buf[3], 'big' )
+        print(self._psi_reader.buf[1]+self._psi_reader.buf[2]+self._psi_reader.buf[3])
+        reading = int.from_bytes( self._psi_reader.buf[1]+self._psi_reader.buf[2]+self._psi_reader.buf[3], 'big' )
         psi = ((reading - 1677722) * (self.psi_range[1] - self.psi_range[0]) / 13421772) + self.psi_range[0]
         return psi
