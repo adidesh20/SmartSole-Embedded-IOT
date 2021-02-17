@@ -50,7 +50,7 @@ class PressureSensor():
             if int.from_bytes(self._status_reader.buf[0],'big') == 0x20:
                 done = True
             if (time.time() - start) > 1.0:
-                raise TimeoutException("Reading taking too long to complete")
+                raise RuntimeError("Reading taking too long to complete")
 
         # get actual reading and convert to psi
         self.bus.i2c_rdwr( self._psi_reader )
