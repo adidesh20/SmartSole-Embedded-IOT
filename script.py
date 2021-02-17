@@ -1,6 +1,9 @@
-import paho.mqtt.client as mqtt
-client = mqtt.Client()
-assert(client.connect("test.mosquitto.org",port=1883) == 0)
+from manometer import *
+bus = smbus2.SMBus(1)
+
+sensor = PressureSensor(bus)
 
 
-client.publish("IC.embedded/Squadron/","hello3")
+while True:
+    print(sensor.read())
+    time.sleep(0.1)
