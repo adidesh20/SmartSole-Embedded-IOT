@@ -1,5 +1,6 @@
-from gyroscope import *
+import paho.mqtt.client as mqtt
+client = mqtt.Client()
+assert(client.connect("test.mosquitto.org",port=1883) == 0)
 
-bus = smbus2.SMBus(1)
 
-gyro = GyroscopeSensor(bus)
+client.publish("IC.embedded/Squadron/","hello3")
