@@ -58,3 +58,10 @@ class PressureSensor():
         reading = int.from_bytes( self._psi_reader.buf[1]+self._psi_reader.buf[2]+self._psi_reader.buf[3], 'big' )
         psi = ((reading - 1677722) * (self.psi_range[1] - self.psi_range[0]) / 13421772) + self.psi_range[0]
         return psi
+
+    def readPascal (self):
+        return (self.read * 6894.76)
+
+
+
+        
