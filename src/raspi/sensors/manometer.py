@@ -61,7 +61,3 @@ class PressureSensor():
 
     def readPascal (self):
         return (self.read * 6894.76)
-
-
-
-        
