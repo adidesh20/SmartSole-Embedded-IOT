@@ -14,9 +14,17 @@ sudo openssl genrsa -out client.key 2048
 sudo openssl req -new -out client.csr -key client.key
 sudo openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 360
 
-sudo cp ca.crt ../../src/communications/certs/
-sudo cp client.key ../../src/communications/certs/
-sudo cp client.crt ../../src/communications/certs/
+sudo openssl genrsa -out backend.key 2048
+sudo openssl req -new -out backend.csr -key backend.key
+sudo openssl x509 -req -in backend.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out backend.crt -days 360
+
+sudo cp ca.crt ../../src/raspi/communications/certs/
+sudo cp client.key ../../src/raspi/communications/certs/
+sudo cp client.crt ../../src/raspi/communications/certs/
+
+sudo cp ca.crt ../../src/server/communications/certs/
+sudo cp backend.key ../../src/server/communications/certs/
+sudo cp backend.crt ../../src/server/communications/certs/
 
 sudo cp server.key ../certs
 sudo cp server.crt ../certs
