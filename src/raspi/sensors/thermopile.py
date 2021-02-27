@@ -74,7 +74,7 @@ class ThermopileSensor():
                 ready = True
 
         self.bus.i2c_rdwr( self._temp_request, self._temp_reader )
-        return (int.from_bytes( self._temp_reader[0]+self._temp_reader[1], 'big', signed="True" ) >> 2) / 32.0
+        return (int.from_bytes( self._temp_reader.buf[0]+self._temp_reader.buf[1], 'big', signed="True" ) >> 2) / 32.0
     
     @property
     def get_reader(self):
