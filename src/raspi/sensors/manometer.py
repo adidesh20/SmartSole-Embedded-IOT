@@ -47,7 +47,7 @@ class PressureSensor():
         while not done:
             self.bus.i2c_rdwr( self._status_reader )
             # if status byte = completed or timeout
-            if int.from_bytes(self._status_reader.buf[0],'big') == 0x20:
+            if int.from_bytes(self._status_reader.buf[0],'big') == 0x40:
                 done = True
             if (time.time() - start) > 1.0:
                 raise RuntimeError("Reading taking too long to complete")
