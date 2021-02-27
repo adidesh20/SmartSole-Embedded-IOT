@@ -40,23 +40,23 @@ class ThermopileSensor():
         if int.from_bytes(device_id_reader.buf[0]+device_id_reader.buf[1], 'big') != 0x67:
             raise RuntimeError("Thermopile sensor not found, check your wiring")
 
-        self.read = read
-        self.write = write
+        self._read = read
+        self._write = write
         self._temp_request = write( [0x1] )
         self._temp_reader = read( 2 )
         
     
     def activate(self):
-        reader = self.read(2)
-        self.bus.i2c_rdwr( self.write( [ self._REG['CONFIG'] ]), reader)
+        reader = self._read(2)
+        self.bus.i2c_rdwr( self._write( [ self._REG['CONFIG'] ]), reader)
         res = int.from_bytes( reader.buf[0] + reader.buf[1], 'big' )
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'] , (res >> 8) | 0x70, res & 0xFF] ) )
+        self.bus.i2c_rdwr( self._write( [self._REG['CONFIG'] , (res >> 8) | 0x70, res & 0xFF] ) )
 
     def deactivate(self):
-        reader = self.read(2)
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG']] ), reader)
+        reader = self._read(2)
+        self.bus.i2c_rdwr( self._write( [self._REG['CONFIG']] ), reader)
         res = int.from_bytes( reader.buf[0] + reader.buf[1], 'big' )
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'], (res>>8) & ~0x70, res & 0xFF] ) )
+        self.bus.i2c_rdwr( self._write( [self._REG['CONFIG'], (res>>8) & ~0x70, res & 0xFF] ) )
 
     def read(self):
         """Gets a reading from the thermopile
@@ -65,8 +65,8 @@ class ThermopileSensor():
             temperature in celsius
         """
 
-        read_ready = self.read(2)
-        write_read_ready = self.write([self._REG['CONFIG']])
+        read_ready = self._read(2)
+        write_read_ready = self._write([self._REG['CONFIG']])
         ready = False
         while not ready:
             self.bus.i2c_rdwr( write_read_ready, read_ready )
