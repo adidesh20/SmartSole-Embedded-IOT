@@ -80,3 +80,11 @@ class GyroscopeSensor():
     @property
     def get_reader(self):
         return self._gyro_reader
+
+
+if __name__ == "__main__":
+    bus = smbus2.SMBus(1)
+    device = GyroscopeSensor(bus)
+    while True:
+        print(device.read())
+        time.sleep(0.1)

@@ -91,3 +91,4 @@ if __name__ == "__main__":
     device = AccelerometerSensor(bus)
     while True:
         print(device.read())
+        time.sleep(0.1)
