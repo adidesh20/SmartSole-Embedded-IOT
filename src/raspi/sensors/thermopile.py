@@ -50,13 +50,13 @@ class ThermopileSensor():
         reader = self.read(2)
         self.bus.i2c_rdwr( self.write( [ self._REG['CONFIG'] ]), reader)
         res = reader.buf[0] << 8 | reader.buf[1]
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'] ], res | 0x7000] ) )
+        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'] , res | 0x7000] ) )
 
     def deactivate(self):
         reader = self.read(2)
         self.bus.i2c_rdwr( self.write( [self._REG['CONFIG']] ), reader)
         res = reader.buf[0] << 8 | reader.buf[1]
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG']], res & ~0x7000] ) )
+        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'], res & ~0x7000] ) )
 
     def read(self):
         """Gets a reading from the thermopile
