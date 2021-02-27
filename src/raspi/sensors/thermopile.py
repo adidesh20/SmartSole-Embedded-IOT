@@ -29,7 +29,7 @@ class ThermopileSensor():
         write = lambda x: smbus2.i2c_msg.write(self.ADDR, x)
         
         # activate the sensor
-        bus.i2c_rdwr( write( [ self._REG['CONFIG'], (0x7100 | sampling_rate) ] )
+        bus.i2c_rdwr( write( [ self._REG['CONFIG'], (0x7100 | sampling_rate) ] ) )
 
         # testing if properly connected
         device_id_reader = read(2) 
