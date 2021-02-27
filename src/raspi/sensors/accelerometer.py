@@ -2,7 +2,7 @@ import smbus2
 import time
 
 class AccelerometerSensor():
-    def __init__(self, bus, address=0x1F, _range = 250):
+    def __init__(self, bus, address=0x1F, _range = 2):
         """ Initializes a accelerometer sensor for communication.
         Notes:
             - Remember you cannot read LSB without reading MSB as well
@@ -59,7 +59,7 @@ class AccelerometerSensor():
         # go into standby mode
         self.bus.i2c_rdwr( write([ self._REG['CTRL_REG_1'], 0x00 ]) )
         # activate the sensor
-        self.bus.i2c_rdwr( write([ self._REG['DATA_CFG'], range_setting ] ]) )
+        self.bus.i2c_rdwr( write([ self._REG['DATA_CFG'], range_setting ] ) )
 
         # set up the reader for all future readings
         self._gyro_request = write( [ self._REG['OUT_X_MSB'] ] )
