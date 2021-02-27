@@ -33,7 +33,7 @@ class ThermopileSensor():
 
         # testing if properly connected
         device_id_reader = read(2) 
-        self.bus.i2c_rdwr( write( [ self._REG['WHO_AM_I'] ] , device_id_reader ) )
+        self.bus.i2c_rdwr( write( [ self._REG['WHO_AM_I'] ] ) , device_id_reader )
 
         # try most basic communication, this is a read-only register set to the device id
         print('device id: {}'.format(int.from_bytes(device_id_reader.buf[0]+device_id_reader.buf[1], 'big')))
