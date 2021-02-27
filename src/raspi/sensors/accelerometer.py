@@ -51,7 +51,7 @@ class AccelerometerSensor():
 
         # try most basic communication, this is a read-only register set to the device id
         print('device id: {}'.format(int.from_bytes(device_id_reader.buf[0], 'big')))
-        if int.from_bytes(device_id_reader.buf[0], 'big') != 0xD7:
+        if int.from_bytes(device_id_reader.buf[0], 'big') != 0xC7:
             raise RuntimeError("Accelerometer / magenetometer sensor not found, check your wiring")
 
         range_setting = self._RANGE_SETTINGS[ self.range ]
