@@ -29,7 +29,7 @@ class ThermopileSensor():
         write = lambda x: smbus2.i2c_msg.write(self.ADDR, x)
         
         # activate the sensor
-        bus.i2c_rdwr( write( [ self._REG['CONFIG'], (0x7100 | sampling_rate) ] ) )
+        bus.i2c_rdwr( write( [ self._REG['CONFIG'], (0x71 | sampling_rate >> 8), sampling_rate & 0xFF ] ) )
 
         # testing if properly connected
         device_id_reader = read(2) 
@@ -50,13 +50,13 @@ class ThermopileSensor():
         reader = self.read(2)
         self.bus.i2c_rdwr( self.write( [ self._REG['CONFIG'] ]), reader)
         res = int.from_bytes( reader.buf[0] + reader.buf[1], 'big' )
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'] , res | 0x7000] ) )
+        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'] , (res >> 8) | 0x70, res & 0xFF] ) )
 
     def deactivate(self):
         reader = self.read(2)
         self.bus.i2c_rdwr( self.write( [self._REG['CONFIG']] ), reader)
         res = int.from_bytes( reader.buf[0] + reader.buf[1], 'big' )
-        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'], res & ~0x7000] ) )
+        self.bus.i2c_rdwr( self.write( [self._REG['CONFIG'], (res>>8) & ~0x70, res & 0xFF] ) )
 
     def read(self):
         """Gets a reading from the thermopile
