@@ -68,7 +68,7 @@ class ThermopileSensor():
         read_ready = self.read(2)
         write_read_ready = self.write([self._REG['CONFIG']])
         ready = False
-        while !ready:
+        while not ready:
             self.bus.i2c_rdwr( write_read_ready, read_ready )
             if ((read_ready.buf[0] << 8 | read_ready.buf[1]) & 0x80) != 0:
                 ready = True
