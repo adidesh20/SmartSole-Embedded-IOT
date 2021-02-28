@@ -1,4 +1,4 @@
-from manometer2 import *
+from manometer import *
 bus = smbus2.SMBus(1)
 
 sensor = PressureSensor (bus)
