@@ -39,7 +39,6 @@ class PressureSensor():
             (int, int, int): returns (x, y, z) taken from the gyroscope sensor as a signed number in degrees.
         """
         self.bus.i2c_rdwr( self._psi_request )
-        time.sleep(0.1)
 
         done = False
         # set up timeout
