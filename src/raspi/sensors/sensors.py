@@ -11,7 +11,7 @@ class SensorInterface():
         self.accelerometer = AccelerometerSensor(self.bus)
         self.gyroscope = GyroscopeSensor(self.bus)
         self.manometer = PressureSensor(self.bus)
-        self.thermopile = ThermopileSensor(self.bus)
+        self.thermopile = ThermopileSensor(self.bus, sampling_rate=0x400)
     
     def read_as_dict(self):
         return {
