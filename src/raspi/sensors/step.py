@@ -1,3 +1,7 @@
+from accelerometer import *
+bus = smbus2.SMBus(1)
+
+
 sensor = AccelerometerSensor(bus)
 step=0
 flag=0
