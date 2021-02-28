@@ -8,10 +8,10 @@ from thermopile import *
 class SensorInterface():
     def __init__(self):
         self.bus = smbus2.SMBus(1)
-        self.accelerometer = AccelerometerSensor()
-        self.gyroscope = GyroscopeSensor()
-        self.manometer = PressureSensor()
-        self.thermopile = ThermopileSensor()
+        self.accelerometer = AccelerometerSensor(self.bus)
+        self.gyroscope = GyroscopeSensor(self.bus)
+        self.manometer = PressureSensor(self.bus)
+        self.thermopile = ThermopileSensor(self.bus)
     
     def read_as_dict(self):
         return {
