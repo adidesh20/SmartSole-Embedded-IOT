@@ -86,3 +86,4 @@ if __name__ == "__main__":
     device = ThermopileSensor(bus)
     while True:
         print(device.read())
+        time.sleep(0.1)
