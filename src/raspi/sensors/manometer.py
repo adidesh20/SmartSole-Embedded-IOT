@@ -61,3 +61,11 @@ class PressureSensor():
 
     def readPascal (self):
         return (self.read * 6894.76)
+
+    
+if __name__ == "__main__":
+    bus = smbus2.SMBus(1)
+    device = PressureSensor(bus)
+    while True:
+        print(device.read())
+        time.sleep(0.1)
