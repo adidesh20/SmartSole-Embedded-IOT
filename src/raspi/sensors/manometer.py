@@ -33,10 +33,10 @@ class PressureSensor():
         self._psi_reader = read( 4 )
     
     def read(self):
-        """Gets a reading from the gyroscope sensor for x, y, z
+        """Gets a reading from the pressure sensor.
 
         Returns:
-            (int, int, int): returns (x, y, z) taken from the gyroscope sensor as a signed number in degrees.
+            Pressure in PSI
         """
         self.bus.i2c_rdwr( self._psi_request )
 
