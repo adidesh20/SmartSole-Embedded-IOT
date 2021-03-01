@@ -27,5 +27,6 @@ while True:
         walk_avg= walk_total/walk_count
         ## send mode,avg and walk_avg to server now
     long_avg=long_total/3000
-    ## send long_vg to server 
+    ## send long_avg to server now
     
+## the alert limits for mode,avg,walk avg and long avg are all set in the server side
