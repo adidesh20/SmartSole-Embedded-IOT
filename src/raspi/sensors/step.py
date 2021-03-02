@@ -1,4 +1,4 @@
-from accelerometer import *
+from sensors.accelerometer import *
 bus = smbus2.SMBus(1)
 
 

@@ -36,7 +36,7 @@ if __name__ == '__main__':
                 
             data['time'].append(time.time())
             data['pressure'].append( np.mean(pressure) )
-            data['temperature'].append( np.mean(temperature) )
+            data['temperature'].append( np.mean(temp) )
             data['steps'].append( steps )
             data['max_pressure'].append( np.amax(pressure) )
 

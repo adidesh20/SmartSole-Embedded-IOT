@@ -1,9 +1,9 @@
 import smbus2
 import time
-from accelerometer import *
-from gyroscope import *
-from manometer import *
-from thermopile import *
+from sensors.accelerometer import *
+from sensors.gyroscope import *
+from sensors.manometer import *
+from sensors.thermopile import *
 
 class SensorInterface():
     def __init__(self):

@@ -20,7 +20,7 @@ class Client():
         """Callback for MQTT disconnect"""
         print('Client disconnected')
 
-    def __init__(self, broker_addr='localhost', broker_port=8883, ca_cert='./certs/ca.crt', client_cert='./certs/client.crt', client_key='./certs/client.key', tls=True):
+    def __init__(self, broker_addr='localhost', broker_port=8883, ca_cert='communications/certs/ca.crt', client_cert='communications/certs/client.crt', client_key='communications/certs/client.key', tls=True):
         """Opens mqtt connection between client and broker. Sets up TLS if required.
 
         Args:
@@ -35,7 +35,7 @@ class Client():
         if tls:
             self.client.tls_set(ca_certs=ca_cert, certfile=client_cert, keyfile=client_key, tls_version = ssl.PROTOCOL_TLSv1_2)
 
-        self.client.set_tls_insecure(True)
+        self.client.tls_insecure_set(True)
         self.client.on_connect = self._on_connect
         self.client.on_disconnect = self._on_disconnect
         self.client.will_set('connection_log', bytes('disconnected', 'utf-8'))
