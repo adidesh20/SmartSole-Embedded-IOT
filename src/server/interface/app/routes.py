@@ -34,17 +34,26 @@ global_data_lock = Lock()
 comms_lock = Lock()
 
 global_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps', 'max_pressure'])
+
+fresh_data_lock = Lock()
+fresh_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps', 'max_pressure'])
 comms = Client(sys.argv[1])
+total_steps = 0
 
 # every 10 minutes, delete any data collected more than 24 hours before
 def data_fixer():
+    global global_data_lock
+    global global_data
     t = time.time() - 86400
     with global_data_lock:
         # delete entries taken more than a day before (86400 = seconds in a day)
+        print(global_data)
+        
         global_data = global_data[global_data['time'] > t]
     time.sleep(600)
 
 def mock_data():
+    global data_lock
     while True:
         with data_lock:
             data_dict['steps'] += 1
@@ -54,18 +63,26 @@ def mock_data():
         time.sleep(1)
 
 def on_data(client, userdata, message):
+    global global_data_lock
+    global global_data
+    global fresh_data
+    global total_steps
     new_data = json.loads(message.payload)
     print(new_data)
     t = time.time()
     with global_data_lock:
-        global_data.append( new_data, ignore_index=True )
+        to_add = pd.DataFrame(new_data)
+        global_data = global_data.append( to_add, ignore_index=True )
+        fresh_data = fresh_data.append( to_add, ignore_index=True )
+    total_steps = global_data['steps'].sum()
+    
     
 
 def process_data():
+    global comms_lock
     with comms_lock:
         comms.client.subscribe('data/')
         comms.client.message_callback_add('data/', on_data)
-        print('here')
     comms.client.loop_forever()
 
 
@@ -94,6 +111,13 @@ def data():
     #     'status': "You have walked too much, you should try to rest for a while. Too much blood is going to your foot"
     # }
     # data_dict['tmp'] += 1
-    with global_data_lock:
-        data_tmp = global_data.to_dict()
+    global fresh_data_lock
+    global fresh_data
+    global total_steps
+    with fresh_data_lock:
+        data_tmp = fresh_data.to_dict()
+    data_tmp['total_steps'] = total_steps    
+    data_tmp['avg_temperature'] = global_data['temperature'].tail(500).mean()
+    data_tmp['avg_pressure'] = global_data['pressure'].tail(500).mean()
+    fresh_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps', 'max_pressure'])
     return data_tmp

@@ -115,11 +115,6 @@
                         </div>
                     </div>
                     <!-- End: Chart -->
-                    <div class="row">
-                        <div class="col-lg-12 col-xl-12 d-flex justify-content-center">
-                            <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="calibrate()">Calibrate</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
@@ -174,10 +169,12 @@
                 //});
 
                 $.getJSON('/data', (res) => {
-                    temperatures.push(res['temperatures'][res['temperatures'].length - 1]);
-                    pressures.push(res['pressures'][res['pressures'].length - 1]);
-                    status = res['status'];
-                    steps = res['step_count'];
+                    length = Object.keys(res['time']).length;
+                    for (var i = 0; i < length; i++){
+                        temperatures.push( {'x': new Date( parseFloat(res['time'][i])*1000 ), 'y': res['temperature'][i]} )
+                        pressures.push( {'x': new Date(parseFloat(res['time'][i])*1000), 'y': res['pressure'][i]})
+                    }
+                    steps = res['total_steps'];
                     avg_temp = res['avg_temperature'];
                     avg_pressure = res['avg_pressure'];
                     var step_status = 'dark';
@@ -202,11 +199,8 @@
                 pressure_chart.render();
 
             }
-            setInterval(updateData, 1000);
+            setInterval(updateData, 5000);
 
-            function calibrate() {
-                $.getJSON('/calibrate', (res) => {});
-            }
 
             //// Initial Values
             //var xValue = 0;

@@ -15,4 +15,5 @@ if __name__ == "__main__":
     t3 = Thread (target=data_fixer, args=())
     t1.start()
     t2.start()
+    time.sleep(20)
     t3.start()
