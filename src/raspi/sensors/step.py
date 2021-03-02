@@ -9,10 +9,12 @@ class Step():
     def is_step(self, reading):
         (x,y,z) = reading
 
-        mag=(x*x+y*y+z*z)/10000
-        if( mag>2 and flag==0):
-            flag=1
+        mag = (x*x+y*y+z*z)/10000
+        if( mag >= 2 and self.flag == 0):
+            self.flag=1
             return 1
-        elif mag<1.9:
-            flag=0
+        elif mag < 1.9:
+            self.flag = 0
+            return 0
+        else:
             return 0

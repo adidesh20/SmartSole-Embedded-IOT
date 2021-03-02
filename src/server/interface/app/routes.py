@@ -1,4 +1,5 @@
 from app import app
+import sys
 from flask import request
 from flask import render_template, Response
 from bs4 import BeautifulSoup
@@ -32,8 +33,16 @@ data_lock = Lock()
 global_data_lock = Lock()
 comms_lock = Lock()
 
-global_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps'])
-comms = Client()
+global_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps', 'max_pressure'])
+comms = Client(sys.argv[1])
+
+# every 10 minutes, delete any data collected more than 24 hours before
+def data_fixer():
+    t = time.time() - 86400
+    with global_data_lock:
+        # delete entries taken more than a day before (86400 = seconds in a day)
+        global_data = global_data[global_data['time'] > t]
+    time.sleep(600)
 
 def mock_data():
     while True:
@@ -46,27 +55,19 @@ def mock_data():
 
 def on_data(client, userdata, message):
     new_data = json.loads(message.payload)
+    print(new_data)
     t = time.time()
     with global_data_lock:
-        global_data.append( message.payload )
+        global_data.append( new_data, ignore_index=True )
     
 
 def process_data():
     with comms_lock:
         comms.client.subscribe('data/')
         comms.client.message_callback_add('data/', on_data)
+        print('here')
     comms.client.loop_forever()
 
-
-@app.route('/calibrate')
-def calibrate():
-    # send the calibration signal to the pi
-    with comms_lock:
-        comms.client.publish('calibrate/', payload=bytes("calibrate", 'UTF-8'))
-    # reset the collected data
-    with global_data_lock:
-        global_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps'])
-    return {}
 
 @app.route('/')
 @app.route('/index')
@@ -94,5 +95,5 @@ def data():
     # }
     # data_dict['tmp'] += 1
     with global_data_lock:
-        if len(global_data) > 
+        data_tmp = global_data.to_dict()
     return data_tmp
