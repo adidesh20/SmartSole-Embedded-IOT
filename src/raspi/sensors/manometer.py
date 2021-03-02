@@ -31,6 +31,7 @@ class PressureSensor():
         self._psi_request = write( [ self._REG_DATA, 0x00, 0x00 ] )
         self._status_reader = read( 1 )
         self._psi_reader = read( 4 )
+        time.sleep(0.05)
     
     def read(self):
         """Gets a reading from the pressure sensor.
