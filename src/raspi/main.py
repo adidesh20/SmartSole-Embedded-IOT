@@ -32,7 +32,7 @@ if __name__ == '__main__':
                 readings = sense.read_as_dict()
                 pressure.append(readings['manometer'])
                 temp.append(readings['thermopile'])
-                steps += step_counter.is_step( readings['accelerometer'] ) )
+                steps += step_counter.is_step( readings['accelerometer'] ) 
                 
             data['time'].append(time.time())
             data['pressure'].append( np.mean(pressure) )
