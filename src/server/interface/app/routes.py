@@ -47,20 +47,9 @@ def data_fixer():
     t = time.time() - 86400
     with global_data_lock:
         # delete entries taken more than a day before (86400 = seconds in a day)
-        print(global_data)
-        
         global_data = global_data[global_data['time'] > t]
     time.sleep(600)
 
-def mock_data():
-    global data_lock
-    while True:
-        with data_lock:
-            data_dict['steps'] += 1
-            data_dict['temperature'].append(10)
-            data_dict['pressure'].append(10)
-            data_dict['status'] = str(int(data_dict['status']) + 1)
-        time.sleep(1)
 
 def on_data(client, userdata, message):
     global global_data_lock
@@ -68,10 +57,9 @@ def on_data(client, userdata, message):
     global fresh_data
     global total_steps
     new_data = json.loads(message.payload)
-    print(new_data)
     t = time.time()
     with global_data_lock:
-        to_add = pd.DataFrame(new_data)
+        to_add = pd.DataFrame(new_data).round(2)
         global_data = global_data.append( to_add, ignore_index=True )
         fresh_data = fresh_data.append( to_add, ignore_index=True )
     total_steps = global_data['steps'].sum()
@@ -117,7 +105,9 @@ def data():
     with fresh_data_lock:
         data_tmp = fresh_data.to_dict()
     data_tmp['total_steps'] = total_steps    
-    data_tmp['avg_temperature'] = global_data['temperature'].tail(500).mean()
-    data_tmp['avg_pressure'] = global_data['pressure'].tail(500).mean()
+    # take averages over past 2 minutes
+    df = global_data.tail(60)
+    data_tmp['avg_temperature'] = round(df['temperature'].mean(), 2)
+    data_tmp['max_pressure_single'] = round(df['max_pressure'].max(), 2)
     fresh_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps', 'max_pressure'])
     return data_tmp

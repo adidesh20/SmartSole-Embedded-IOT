@@ -42,14 +42,14 @@
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col mr-2">
-                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Max walking for today</span></div>
-                                            <div class="row no-gutters align-items-center">
+                                            <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Safe walking limit for today</span></div>
+                                            <div class="row no-gutters align-items-center" id="stepProgressBar">
                                                 <div class="col-auto">
-                                                    <div class="text-dark font-weight-bold h5 mb-0 mr-3"><span>50%</span></div>
+                                                    <div class="text-dark font-weight-bold h5 mb-0 mr-3"><span>0%</span></div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="progress progress-sm">
-                                                        <div class="progress-bar bg-info" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;"><span class="sr-only">50%</span></div>
+                                                        <div class="progress-bar bg-info" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"><span class="sr-only">0%</span></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -91,7 +91,7 @@
                         <div class="col-lg-6 col-xl-6">
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-center align-items-center align-text-center">
-                                    <h3 class="text-primary font-weight-bold m-0 text-center"> Temperature of sole </h3>
+                                    <h3 class="text-primary font-weight-bold m-0 text-center"> Temperature of sole of shoe </h3>
                                 </div>
                                 <div class="card-body" style="height: 400px">
                                     <div id="temperatureChart" style="height: 100%; width: 100%;"></div>
@@ -105,7 +105,7 @@
                         <div class="col-lg-6 col-xl-6">
                             <div class="card shadow mb-4">
                                 <div class="card-header d-flex justify-content-center align-items-center align-text-center">
-                                    <h3 class="text-primary font-weight-bold m-0 text-center"> Pressure on wound </h3>
+                                    <h3 class="text-primary font-weight-bold m-0 text-center"> Pressure on sole of shoe </h3>
                                 </div>
                                 <div class="card-body" style="height: 400px">
                                     <div id="pressureChart" style="height: 100%; width: 100%;"></div>
@@ -121,9 +121,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-    <script src="assets/js/bs-init.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="assets/js/theme.js"></script>
     <!-- <div>
         <img src="/plot.png" alt="Data loading is broken" width='400' height='400'>
     </div> -->
@@ -132,19 +130,48 @@
     <script>
         window.onload = function() {
             var temperatures = [],
+                temperature_limit = [],
                 pressures = [],
+                pressure_limit = [],
                 steps = 0,
                 status = "No data";
 
             var temperature_chart = new CanvasJS.Chart("temperatureChart", {
                 theme: "light2",
+                axisY: {
+                    title: "Temperature",
+                    suffix: "\xB0C",
+                    maximum: 50,
+                    minimum: 20,
+                },
+                toolTip: {
+                    content: "{x}: {y}"
+                },
+                legend: {
+                    cursor: "pointer",
+                    verticalAlign: "top",
+                    horizontalAlign: "middle",
+                    dockInsidePlotArea: true,
+                },
                 //title: {
                 //    text: "Temperature"
                 //},
                 data: [{
                     type: "line",
-                    dataPoints: temperatures
-                }]
+                    name: "Your data",
+                    showInLegend: true,
+                    dataPoints: temperatures,
+                    xValueFormatString: "HH:mm:ss"
+                },
+                {
+                    type: "line",
+                    name: "Safety limit",
+                    markerSize: 0,
+                    showInLegend: true,
+                    dataPoints: temperature_limit,
+                    xValueFormatString: "HH:mm:ss"
+                }
+                ]
             });
 
             var pressure_chart = new CanvasJS.Chart("pressureChart", {
@@ -152,12 +179,41 @@
                 //title: {
                 //    text: "Pressure"
                 //},
+                axisY: {
+                    title: "Pressure",
+                    suffix: " psi",
+                    maximum: 25,
+                    minimum: 10,
+                },
+                toolTip: {
+                    content: "{x}: {y}"
+                },
+                legend: {
+                    cursor: "pointer",
+                    verticalAlign: "top",
+                    horizontalAlign: "middle",
+                    dockInsidePlotArea: true,
+                },
                 data: [{
                     type: "line",
-                    dataPoints: pressures
-                }]
+                    name: "Your data",
+                    showInLegend: true,
+                    dataPoints: pressures,
+                    xValueFormatString: "HH:mm:ss"
+                },
+                {
+                    type: "line",
+                    name: "Safety limit",
+                    markerSize: 0,
+                    showInLegend: true,
+                    dataPoints: pressure_limit,
+                    xValueFormatString: "HH:mm:ss"
+                }
+                ]
             });
 
+            var temp_alert = true, pressure_alert = true, step_alert = true;
+            function reset_alert() {temp_alert = true; pressure_alert = true; step_alert = true;}
             function updateData() {
                 // poll the data from python and make all_data equal to it
                 //$.getJSON("/data", (a) => {
@@ -171,27 +227,46 @@
                 $.getJSON('/data', (res) => {
                     length = Object.keys(res['time']).length;
                     for (var i = 0; i < length; i++){
-                        temperatures.push( {'x': new Date( parseFloat(res['time'][i])*1000 ), 'y': res['temperature'][i]} )
-                        pressures.push( {'x': new Date(parseFloat(res['time'][i])*1000), 'y': res['pressure'][i]})
+                        var t = new Date( parseFloat(res['time'][i])*1000 );
+                        temperatures.push( {'x': t, 'y': res['temperature'][i]} )
+                        temperature_limit.push( {'x': t, 'y': 37} )
+                        pressures.push( {'x': t, 'y': res['max_pressure'][i]})
+                        pressure_limit.push( {'x': t, 'y': 20} )
                     }
                     steps = res['total_steps'];
                     avg_temp = res['avg_temperature'];
-                    avg_pressure = res['avg_pressure'];
+                    max_pressure = res['max_pressure_single'];
+                    var percentage = Math.floor(steps * 100 / 2600);
+                    if (percentage > 100) {percentage = 100}
+
                     var step_status = 'dark';
-                    if (steps > 10) {
-                        step_status = 'danger';
-                    }
+                    var pressure_status = 'dark';
+                    var temp_status = 'dark';
+                    if (steps >= 2600) { step_status = 'danger'; if (step_alert) {alert('Please stop walking as soon as possible. You are endangering your ulcer.'); step_alert = false}}
+                    if (max_pressure >= 20) { pressure_status = 'danger'; if (pressure_alert) {alert('You are placing too much pressure on your foot.'); pressure_alert = false;}}
+                    if (avg_temp >= 37) { temp_status = 'danger'; if (temp_alert) {alert('Your foot is too hot. Try to cool it down.'); temp_alert = false;}}
+
                     $("#averageTemperature").html(`
                         <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Average Temperature</span></div>
-                        <div class="text-dark font-weight-bold h5 mb-0"><span> ${avg_temp.toString()}</span></div>
+                        <div class="text-${temp_status} font-weight-bold h5 mb-0"><span> ${avg_temp.toString()}</span></div>
                     `);
                     $("#stepsWalked").html(`
                         <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Steps walked today</span></div>
                         <div class="text-${step_status} font-weight-bold h5 mb-0"><span>${steps.toString()}</span></div>
                     `);
                     $("#averagePressure").html(`
-                        <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Average Pressure</span></div>
-                        <div class="text-dark font-weight-bold h5 mb-0"><span>${avg_pressure.toString()}</span></div>
+                        <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Recent Pressure Maximum</span></div>
+                        <div class="text-${pressure_status} font-weight-bold h5 mb-0"><span>${max_pressure.toString()}</span></div>
+                    `);
+                    $("#stepProgressBar").html(`
+                        <div class="col-auto">
+                            <div class="text-dark font-weight-bold h5 mb-0 mr-3"><span>${percentage}%</span></div>
+                        </div>
+                        <div class="col">
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-info" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100" style="width: ${percentage}%;"><span class="sr-only">${percentage}%</span></div>
+                            </div>
+                        </div>
                     `);
                 })
 
@@ -200,6 +275,7 @@
 
             }
             setInterval(updateData, 5000);
+            setInterval(updateData, 240000);
 
 
             //// Initial Values
@@ -235,5 +311,3 @@
         }
     </script>
 </body>
-
-</html>

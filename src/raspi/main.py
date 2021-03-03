@@ -22,13 +22,13 @@ if __name__ == '__main__':
         }
 
         # every 10 seconds
-        for i in range(4):
+        for i in range(5):
             pressure = []
             temp = []
             steps = 0
             
-            # about 0.5 seconds per iteration. overall 2.5 sec
-            for i in range(5):
+            # about 0.5 seconds per iteration. overall 2 sec
+            for i in range(4):
                 readings = sense.read_as_dict()
                 pressure.append(readings['manometer'])
                 temp.append(readings['thermopile'])
