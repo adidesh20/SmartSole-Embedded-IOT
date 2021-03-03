@@ -153,9 +153,6 @@
                     horizontalAlign: "middle",
                     dockInsidePlotArea: true,
                 },
-                //title: {
-                //    text: "Temperature"
-                //},
                 data: [{
                     type: "line",
                     name: "Your data",
@@ -232,6 +229,14 @@
                         temperature_limit.push( {'x': t, 'y': 37} )
                         pressures.push( {'x': t, 'y': res['max_pressure'][i]})
                         pressure_limit.push( {'x': t, 'y': 20} )
+
+                        // only keep 10 minutes of data 
+                        while (temperatures.length > 300){
+                            temperatures.shift();
+                            temperature_limit.shift();
+                            pressures.shift();
+                            pressure_limit.shift();
+                        }
                     }
                     steps = res['total_steps'];
                     avg_temp = res['avg_temperature'];
