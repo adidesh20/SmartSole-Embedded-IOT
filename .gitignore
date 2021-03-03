@@ -1,4 +1,5 @@
 *script.py
+*.mp4
 __pycache__/*
 __pycache__
 *iot_page*
