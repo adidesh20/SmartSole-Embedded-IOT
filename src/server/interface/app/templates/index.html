@@ -210,16 +210,7 @@
             });
 
             var temp_alert = true, pressure_alert = true, step_alert = true;
-            function reset_alert() {temp_alert = true; pressure_alert = true; step_alert = true;}
             function updateData() {
-                // poll the data from python and make all_data equal to it
-                //$.getJSON("/data", (a) => {
-                //    temperatures.push({
-                //        y: a['temperature'][0],
-                //        x: i
-                //    })
-                //    i += 1;
-                //});
 
                 $.getJSON('/data', (res) => {
                     length = Object.keys(res['time']).length;
@@ -248,8 +239,11 @@
                     var pressure_status = 'dark';
                     var temp_status = 'dark';
                     if (steps >= 2600) { step_status = 'danger'; if (step_alert) {alert('Please stop walking as soon as possible. You are endangering your ulcer.'); step_alert = false}}
+                    else {step_alert = true;}
                     if (max_pressure >= 20) { pressure_status = 'danger'; if (pressure_alert) {alert('You are placing too much pressure on your foot.'); pressure_alert = false;}}
+                    else {pressure_alert = true;}
                     if (avg_temp >= 37) { temp_status = 'danger'; if (temp_alert) {alert('Your foot is too hot. Try to cool it down.'); temp_alert = false;}}
+                    else {temp_alert = true;}
 
                     $("#averageTemperature").html(`
                         <div class="text-uppercase text-info font-weight-bold text-xs mb-1"><span>Average Temperature</span></div>
@@ -280,38 +274,6 @@
 
             }
             setInterval(updateData, 5000);
-            setInterval(updateData, 240000);
-
-
-            //// Initial Values
-            //var xValue = 0;
-            //var yValue = 10;
-            //var newDataCount = 6;
-
-            //function addData(data) {
-            //    if (newDataCount != 1) {
-            //        $.each(data, function(key, value) {
-            //            dataPoints.push({
-            //                x: value[0],
-            //                y: parseInt(value[1])
-            //            });
-            //            xValue++;
-            //            yValue = parseInt(value[1]);
-            //        });
-            //    } else {
-            //        //dataPoints.shift();
-            //        dataPoints.push({
-            //            x: data[0][0],
-            //            y: parseInt(data[0][1])
-            //        });
-            //        xValue++;
-            //        yValue = parseInt(data[0][1]);
-            //    }
-
-            //    newDataCount = 1;
-            //    chart.render();
-            //}
-
 
         }
     </script>

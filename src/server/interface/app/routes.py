@@ -105,7 +105,7 @@ def data():
         data_tmp = fresh_data.to_dict()
     data_tmp['total_steps'] = total_steps    
     # take averages over past 2 minutes
-    df = global_data.tail(60)
+    df = global_data.tail(4)
     data_tmp['avg_temperature'] = round(df['temperature'].mean(), 2)
     data_tmp['max_pressure_single'] = round(df['max_pressure'].max(), 2)
     fresh_data = pd.DataFrame(columns = ['time', 'pressure', 'temperature', 'steps', 'max_pressure'])
