@@ -2,7 +2,6 @@ from app import app
 import sys
 from flask import request
 from flask import render_template, Response
-from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 import time
